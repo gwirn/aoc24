@@ -51,13 +51,13 @@ pub fn day4_1() {
                 let upper_idx = (i as i32 - j as i32) as usize;
                 match raw_split[j].chars().nth(upper_idx) {
                     Some(c) => upper.push(c.to_string()),
-                    None => {}
+                    None => break,
                 }
                 // same as above put but from other directions
                 let lower_idx = (upper_idx as i32 - *line_len as i32).abs() as usize;
                 match raw_split[n_lines - 1 - j].chars().nth(lower_idx) {
                     Some(c) => lower.push(c.to_string()),
-                    None => {}
+                    None => break,
                 }
             }
             let upper_join = upper.join("");
@@ -100,7 +100,7 @@ pub fn day4_1() {
     println!("{:?}", vertical + horizontal + diag0 + diag1);
 }
 
-pub fn day4() {
+pub fn day4_2() {
     // read file
     let raw_in = fs::read_to_string("./inputs/day4.txt").expect("cant read file");
     // remove newlines
