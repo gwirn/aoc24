@@ -1,8 +1,8 @@
 use regex::Regex;
 use std::fs;
-/*
+
 // PART 1
-pub fn day3() {
+pub fn day3_1() {
     // read data
     let raw = fs::read_to_string("./inputs/day3.txt").expect("cant read line");
     // build regex to capture `mul(NNN,NNN)`
@@ -23,7 +23,7 @@ pub fn day3() {
         .sum::<i32>();
     println!("Sum {:?}", s);
 }
-*/
+
 // find the closest item in `in_vec` in front of probe
 fn closest(in_vec: &Vec<i32>, probe: i32) -> i32 {
     let mut closest_idx: usize = 0;
@@ -41,7 +41,7 @@ fn closest(in_vec: &Vec<i32>, probe: i32) -> i32 {
     }
     in_vec[closest_idx]
 }
-pub fn day3() {
+pub fn day3_2() {
     // read data
     let raw = fs::read_to_string("./inputs/day3.txt").expect("cant read line");
     // build regex to capture `mul(NNN,NNN)`
