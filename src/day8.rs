@@ -59,62 +59,35 @@ pub fn day8() {
                 let c_diff = p[r].1 - p[c].1;
                 let mut counter = 1;
 
-                // flag if a diagonal direction of the search X is already out of bounds
+                // flag if a diagonal direction of the search is already out of bounds
                 let mut dir0_flag = false;
                 let mut dir0_1_flag = false;
-                let mut dir1_flag = false;
-                let mut dir1_1_flag = false;
 
-                // number of introduced antennas
-                let mut ap0_count = 0;
-                let mut ap0_1_count = 0;
-                let mut ap1_count = 0;
-                let mut ap1_1_count = 0;
                 loop {
-                    // next locations of the search X
+                    // next locations of the search beam in both directions
                     let ap0 = (p[r].0 + r_diff * counter, p[r].1 + c_diff * counter);
-                    let ap0_1 = (p[r].0 - r_diff * counter, p[r].1 - c_diff * counter);
-                    let ap1 = (p[c].0 - r_diff * counter, p[c].1 - c_diff * counter);
-                    let ap1_1 = (p[c].0 + r_diff * counter, p[c].1 + c_diff * counter);
+                    let ap1 = (p[r].0 - r_diff * counter, p[r].1 - c_diff * counter);
 
                     // check if next positions are in bounds
                     if ap0.0 >= 0 && ap0.1 >= 0 && ap0.0 < row_max && ap0.1 < col_max {
                         antinode_positions.insert(ap0);
-                        ap0_count += 1;
                     } else {
                         dir0_flag = true;
                     }
 
                     if ap1.0 >= 0 && ap1.1 >= 0 && ap1.0 < row_max && ap1.1 < col_max {
                         antinode_positions.insert(ap1);
-                        ap1_count += 1;
-                    } else {
-                        dir1_flag = true;
-                    }
-
-                    if ap0_1.0 >= 0 && ap0_1.1 >= 0 && ap0_1.0 < row_max && ap0_1.1 < col_max {
-                        antinode_positions.insert(ap0_1);
-                        ap0_1_count += 1;
                     } else {
                         dir0_1_flag = true;
                     }
 
-                    if ap1_1.0 >= 0 && ap1_1.1 >= 0 && ap1_1.0 < row_max && ap1_1.1 < col_max {
-                        antinode_positions.insert(ap1_1);
-                        ap1_1_count += 1;
-                    } else {
-                        dir1_1_flag = true;
-                    }
-
                     // if all are out of field bounds the end is reached
-                    if dir0_flag && dir0_1_flag && dir1_flag && dir1_1_flag {
+                    if dir0_flag && dir0_1_flag {
                         break;
                     }
 
-                    if ap0_count == 1 || ap1_count == 1 || ap0_1_count == 1 || ap1_1_count == 1 {
-                        antinode_positions.insert(p[r]);
-                        antinode_positions.insert(p[c]);
-                    }
+                    antinode_positions.insert(p[r]);
+                    antinode_positions.insert(p[c]);
                     counter += 1;
                 }
             }
