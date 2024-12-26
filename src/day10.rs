@@ -1,14 +1,39 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::fs;
 
 const DIRECTIONS: [(i32, i32); 4] = [(0, 1), (1, 0), (0, -1), (-1, 0)];
 
-fn search(grid: &Vec<Vec<i8>>, row: usize, col: usize, start: (i32, i32)) -> usize {
+fn search(grid: &Vec<Vec<i8>>, row: usize, col: usize, start: (i32, i32)) -> (usize, usize) {
     let mut stack = VecDeque::new();
+    // coordinates of the found trail end
     let mut found_end: HashSet<(usize, usize)> = HashSet::new();
+    // ad start to stack
     stack.push_back(start);
+    // how often a specific coordinate was visited (would only need the data for the trail end
+    // coordinates but these are not known before
+    // how often the top is visited is also the number of different ways to the top
+    let mut n_visited: HashMap<(i32, i32), usize> = HashMap::new();
+    // max number of hiking trails from trail head
+    let mut n_ways_max: HashMap<(i32, i32), usize> = HashMap::new();
     'outer: loop {
-        // println!("{:?}", stack);
+        // number of times a coordinate appears in the stack
+        let mut stack_count: HashMap<(i32, i32), usize> = HashMap::new();
+        for i in stack.iter() {
+            *stack_count.entry(*i).or_insert(0) += 1;
+        }
+        // check how often a coordinate was visited
+        for i in stack_count.iter() {
+            match n_visited.get(i.0) {
+                Some(v) => {
+                    if i.1 > v {
+                        n_visited.insert(*i.0, *i.1);
+                    }
+                }
+                None => {
+                    n_visited.insert(*i.0, *i.1);
+                }
+            }
+        }
         let pos = match stack.pop_front() {
             Some(v) => v,
             None => break 'outer,
@@ -27,15 +52,31 @@ fn search(grid: &Vec<Vec<i8>>, row: usize, col: usize, start: (i32, i32)) -> usi
                     // find top
                     if grid[new_pos_u.0][new_pos_u.1] == 9 {
                         found_end.insert(new_pos_u);
+                        // update number of times visited
+                        match n_visited.get(&new_pos) {
+                            Some(v) => {
+                                let nwm = match n_ways_max.get(&new_pos) {
+                                    Some(v) => v,
+                                    None => &0,
+                                };
+                                if *v > *nwm {
+                                    n_ways_max.insert(new_pos, *v);
+                                }
+                            }
+                            None => {}
+                        }
                     }
-                    if !stack.contains(&new_pos) {
-                        stack.push_back(new_pos);
-                    }
+                    stack.push_back(new_pos);
                 }
             }
         }
     }
-    found_end.len()
+    (
+        // PART 1
+        found_end.len(),
+        // PART 2
+        n_ways_max.iter().map(|(_, x)| x).sum::<usize>() + found_end.len(),
+    )
 }
 
 pub fn day10() {
@@ -69,9 +110,13 @@ pub fn day10() {
             }
         }
     }
-    let mut score = 0;
+    let mut score1 = 0;
+    let mut score2 = 0;
     for s in &start_pos {
-        score += search(&grid, n_row, n_col, *s);
+        let (s1, s2) = search(&grid, n_row, n_col, *s);
+        score1 += s1;
+        score2 += s2;
     }
-    println!("Score: {}", score);
+    println!("Score Part 1: {}", score1);
+    println!("Score Part 2: {}", score2);
 }
